@@ -1,3 +1,6 @@
+// @deprecated
+// don't use this!
+
 // export interface UserInfo {
 //     characters: Character[];
 //     player:     Player;

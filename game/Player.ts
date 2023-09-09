@@ -4,11 +4,30 @@ export interface PlayerDetails {
     level: number;
     worldLevel: number;
     friendCount: number;
-    avatarName: string;
+    avatar: Resource;
     signature: string;
-    lightConeCount: number;
-    avatarCount: number;
-    achievementCount: number;
+    spaceInfo: SpaceInfo;
+}
+
+export interface SpaceInfo {
+    challengeData:     ChallengeData;
+    passAreaProgress: number;
+    lightConeCount:   number;
+    avatarCount:       number;
+    achievementCount:  number;
+}
+
+export interface ChallengeData {
+    mazeGroupId:        number;
+    mazeGroupIndex:     number;
+    preMazeGroupIndex: number;
+}
+
+export interface Resource {
+    id:     string;
+    name:   string;
+    color?: string;
+    icon:   string;
 }
 
 export class Player {
@@ -17,11 +36,9 @@ export class Player {
     readonly level: number;
     readonly worldLevel: number;
     readonly friendCount: number;
-    readonly avatarName: string;
+    readonly avatar: Resource;
     readonly signature: string;
-    readonly lightConeCount: number;
-    readonly avatarCount: number;
-    readonly achievementCount: number;
+    readonly spaceInfo: SpaceInfo;
 
     constructor(details: PlayerDetails) {
         this.uuid = details.uuid;
@@ -29,10 +46,8 @@ export class Player {
         this.level = details.level;
         this.worldLevel = details.worldLevel;
         this.friendCount = details.friendCount;
-        this.avatarName = details.avatarName;
+        this.avatar = details.avatar;
         this.signature = details.signature;
-        this.lightConeCount = details.lightConeCount;
-        this.avatarCount = details.avatarCount;
-        this.achievementCount = details.achievementCount;
+        this.spaceInfo = details.spaceInfo;
     }
 }

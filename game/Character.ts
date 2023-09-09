@@ -1,21 +1,21 @@
 export enum Path {
-    "The Destruction",
-    "The Hunt",
-    "The Erudition",
-    "The Harmony",
-    "The Nihility",
-    "The Preservation",
-    "The Abundance"
+    "Warrior" = "The Destruction",
+    "Rogue" = "The Hunt",
+    "UNKNOWN1" = "The Erudition",
+    "UNKNOWN2" = "The Harmony",
+    "UNKNOWN3" = "The Nihility",
+    "UNKNOWN4" = "The Preservation",
+    "UNKNOWN5" = "The Abundance",
 }
 
 export enum Element {
-    "Physical",
-    "Fire",
-    "Ice",
-    "Lightning",
-    "Wind",
-    "Quantum",
-    "Imaginary"
+    "Physical" = "Physical",
+    "Fire" = "Fire",
+    "Ice" = "Ice",
+    "Thunder" = "Lightning",
+    "Wind" = "Wind",
+    "Quantum" = "Quantum",
+    "Imaginary" = "Imaginary",
 }
 
 export interface Character {

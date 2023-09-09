@@ -1,27 +1,5 @@
 import { Api } from "./Api.ts";
-import { Character } from "../game";
-
-export interface ApiPlayerData {
-    nickname: string;
-    level: number;
-    world_level: number;
-    friend_count: number;
-    avatar_name: string;
-    signature: string;
-    light_cone_count: number;
-    avatar_count: number;
-    achievement_count: number;
-}
-
-interface ApiCharacterData {
-
-}
-
-export interface ApiUserInfo {
-    player: ApiPlayerData;
-    characters: ApiCharacterData[];
-}
-
+import {ApiUserInfo} from "./StarRailApi.type.ts";
 
 export class StarRailApi extends Api {
     static baseUrl = 'https://api.mihomo.me';

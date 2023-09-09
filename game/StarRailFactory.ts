@@ -1,7 +1,8 @@
 import {StarRailApi} from "../api";
-import {Character} from "./Character.ts";
+import {Character, Element, Path} from "./Character.ts";
 import {User} from "./User.ts";
-import {Player} from "./Player.ts";
+import {Player, SpaceInfo} from "./Player.ts";
+import {mapKeysToCamelCase} from "../helper.ts";
 
 export class StarRailFactory {
     get users(): User[] {
@@ -26,19 +27,26 @@ export class StarRailFactory {
 
             // Map snake_case to camelCase
             const mappedPlayer = new Player({
-                uuid,
+                uuid: playerData.uid,
                 nickname: playerData.nickname,
                 level: playerData.level,
                 worldLevel: playerData.world_level,
                 friendCount: playerData.friend_count,
-                avatarName: playerData.avatar_name,
+                avatar: playerData.avatar,
                 signature: playerData.signature,
-                lightConeCount: playerData.light_cone_count,
-                avatarCount: playerData.avatar_count,
-                achievementCount: playerData.achievement_count
+                spaceInfo: mapKeysToCamelCase(playerData.space_info) as SpaceInfo,
             });
 
-            this._users.push(new User(mappedPlayer, characters.map(char => new Character(char)), userApi));
+            this._users.push(new User(mappedPlayer, characters.map(char => new Character({
+                id: char.id,
+                name: char.name,
+                rarity: char.rarity,
+                rank: char.rank,
+                level: char.level,
+                promotion: char.promotion,
+                path: char.path.id as Path,
+                element: char.element.id as Element,
+            })), userApi));
         } catch (e) {
             throw new Error(`Error fetching data from the game's API (player-details): ${e}`);
         }
