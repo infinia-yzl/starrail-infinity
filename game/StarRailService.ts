@@ -4,7 +4,8 @@ import {User} from "./User.ts";
 import {Player, SpaceInfo} from "./Player.ts";
 import {mapKeysToCamelCase} from "../helper.ts";
 
-export class StarRailFactory {
+export class StarRailService {
+    // TODO: Change to Map instead for easy lookup and no dupes
     get users(): User[] {
         return this._users;
     }

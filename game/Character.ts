@@ -30,6 +30,7 @@ export interface Character {
 }
 
 export class Character {
+    // FIXME: tangible fields
     constructor(data: Character) {
         Object.assign(this, data);
     }
