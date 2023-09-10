@@ -28,12 +28,12 @@ export interface ApiCharacterData {
     light_cone:  ApiLightCone;
     relics:      ApiRelic[];
     relic_sets:  ApiRelicSet[];
-    attributes:  ApiAddition[];
-    additions:   ApiAddition[];
-    properties:  ApiAddition[];
+    attributes:  ApiAttribute[];
+    additions:   ApiAttribute[];
+    properties:  ApiAttribute[];
 }
 
-export interface ApiAddition {
+export interface ApiAttribute {
     field:   ApiField;
     name:    string;
     icon:    string;
@@ -83,8 +83,8 @@ export interface ApiLightCone {
     preview:    string;
     portrait:   string;
     path:       ApiResource;
-    attributes: ApiAddition[];
-    properties: ApiAddition[];
+    attributes: ApiAttribute[];
+    properties: ApiAttribute[];
 }
 
 export interface ApiRelicSet {
@@ -93,7 +93,7 @@ export interface ApiRelicSet {
     icon:       string;
     num:        number;
     desc:       string;
-    properties: ApiAddition[];
+    properties: ApiAttribute[];
 }
 
 export interface ApiRelic {
@@ -104,8 +104,8 @@ export interface ApiRelic {
     rarity:     number;
     level:      number;
     icon:       string;
-    main_affix: ApiAddition;
-    sub_affix:  ApiAddition[];
+    main_affix: ApiAttribute;
+    sub_affix:  ApiAttribute[];
 }
 
 export interface ApiSkillTree {

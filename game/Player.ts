@@ -1,3 +1,5 @@
+import {Resource} from "./Mechanic.types.ts";
+
 export interface PlayerDetails {
     uuid: string;
     nickname: string;
@@ -21,13 +23,6 @@ export interface ChallengeData {
     mazeGroupId:        number;
     mazeGroupIndex:     number;
     preMazeGroupIndex: number;
-}
-
-export interface Resource {
-    id:     string;
-    name:   string;
-    color?: string;
-    icon:   string;
 }
 
 export class Player {

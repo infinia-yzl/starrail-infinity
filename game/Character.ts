@@ -1,37 +1,70 @@
-export enum Path {
-    "Warrior" = "The Destruction",
-    "Rogue" = "The Hunt",
-    "UNKNOWN1" = "The Erudition",
-    "UNKNOWN2" = "The Harmony",
-    "UNKNOWN3" = "The Nihility",
-    "UNKNOWN4" = "The Preservation",
-    "UNKNOWN5" = "The Abundance",
-}
+import {Resource, Effect, PathResource, ElementResource} from "./Mechanic.types.ts";
+import {Equipment} from "./Equipment.ts";
 
-export enum Element {
-    "Physical" = "Physical",
-    "Fire" = "Fire",
-    "Ice" = "Ice",
-    "Thunder" = "Lightning",
-    "Wind" = "Wind",
-    "Quantum" = "Quantum",
-    "Imaginary" = "Imaginary",
-}
-
-export interface Character {
+export interface CharacterDetails {
     id: string,
     name: string,
     rarity: number,    // Rank (4* / 5*)
     rank: number,      // Eidolon
     level: number,
     promotion: number, // Ascension
-    path: Path,
-    element: Element,
+    path: PathResource,
+    element: ElementResource,
+    skill: Skill[],
+    skillTree: SkillNode[],
+}
+
+export interface Skill {
+    id:          string;
+    name:        string;
+    level:       number;
+    maxLevel:   number;
+    element:     Resource | null;
+    type:        string;
+    typeText:   string;
+    effect:      Effect;
+    effectText: string;
+    simpleDesc: string;
+    desc:        string;
+    icon:        string;
+}
+
+// Traces
+export interface SkillNode {
+    id:        string;
+    level:     number;
+    anchor:    string;
+    maxLevel: number;
+    icon:      string;
+    parent:    null | string;
 }
 
 export class Character {
-    // FIXME: tangible fields
-    constructor(data: Character) {
-        Object.assign(this, data);
+    id: string;
+    name: string;
+    rarity: number;
+    rank: number;
+    level: number;
+    promotion: number;
+    path: PathResource;
+    element: ElementResource;
+    skill: Skill[];
+    skillTree: SkillNode[];
+
+    equipment: Equipment;
+
+    constructor(characterData: CharacterDetails, equipmentData: Equipment) {
+        this.id = characterData.id;
+        this.name = characterData.name;
+        this.rarity = characterData.rarity;
+        this.rank = characterData.rank;
+        this.level = characterData.level;
+        this.promotion = characterData.promotion;
+        this.path = characterData.path;
+        this.element = characterData.element;
+        this.skill = characterData.skill;
+        this.skillTree = characterData.skillTree;
+
+        this.equipment = equipmentData;
     }
 }

@@ -1,2 +1,3 @@
-export * from './Character.ts';
-export * from './Player.ts';
+export * from './Character';
+export * from './Player';
+export * from './Equipment';
