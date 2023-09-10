@@ -2,7 +2,7 @@ import { expect, test, describe, beforeAll } from "bun:test";
 import { StarRailApi } from "./StarRailApi.ts";
 import { ApiCharacterData } from "./StarRailApi.type.ts";
 
-describe("StarRailApi tests", () => {
+describe("StarRailApi", () => {
   const UUID = "801875354";
   let api: StarRailApi;
 
