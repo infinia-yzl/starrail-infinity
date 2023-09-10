@@ -1,2 +1,2 @@
-export * from './Api';
-export * from './StarRailApi.ts';
+export * from "./Api";
+export * from "./StarRailApi.ts";

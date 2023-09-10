@@ -1,14 +1,24 @@
 {
-  "dependencies": { "figlet": "^1.6.0" },
+  "dependencies": {
+    "camelcase-keys": "^9.0.0",
+    "figlet": "^1.6.0"
+  },
   "devDependencies": {
     "@types/figlet": "^1.5.6",
-    "bun-types": "^1.0.1"
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "@typescript-eslint/parser": "^6.6.0",
+    "bun-types": "^1.0.1",
+    "eslint": "^8.49.0",
+    "eslint-config-prettier": "^9.0.0",
+    "prettier": "3.0.3",
+    "typescript": "^5.2.2"
   },
   "name": "psychic-eureka",
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "start": "bun run index.ts"
+    "start": "bun run index.ts",
+    "lint": "bun x eslint . --fix"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
