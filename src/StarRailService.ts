@@ -11,7 +11,7 @@ import {
   Relic,
   User,
 } from "./game";
-import { Attribute, PathResource } from "./game/Mechanic.types.ts";
+import { Attribute, PathResource } from "./game/Mechanic.type.ts";
 import {
   ApiCharacterData,
   ApiPlayerData,

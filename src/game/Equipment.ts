@@ -1,4 +1,4 @@
-import { PathResource, Attribute } from "./Mechanic.types.ts";
+import { PathResource, Attribute } from "./Mechanic.type.ts";
 
 export interface LightCone {
   id: string;

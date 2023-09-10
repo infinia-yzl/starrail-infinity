@@ -1,4 +1,4 @@
-import { Resource } from "./Mechanic.types.ts";
+import { Resource } from "./Mechanic.type.ts";
 
 export interface PlayerDetails {
   uuid: string;

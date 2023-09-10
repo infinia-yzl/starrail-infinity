@@ -3,7 +3,7 @@ import {
   Effect,
   PathResource,
   ElementResource,
-} from "./Mechanic.types.ts";
+} from "./Mechanic.type.ts";
 import { Equipment } from "./Equipment.ts";
 
 export interface CharacterDetails {
