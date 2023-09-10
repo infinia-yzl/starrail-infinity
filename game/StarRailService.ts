@@ -8,19 +8,18 @@ import {Attribute, PathResource} from "./Mechanic.types.ts";
 import {ApiRelic} from "../api/StarRailApi.type.ts";
 
 export class StarRailService {
-    // TODO: Change to Map instead for easy lookup and no dupes
+    private readonly _users: Map<string, User>;
+
     get users(): User[] {
-        return this._users;
+        return Array.from(this._users.values());
     }
 
-    set users(value: User[]) {
-        this._users = value;
+    getUser(uuid: string): User | undefined {
+        return this._users.get(uuid);
     }
 
-    private _users: User[];
-
-    constructor(users = []) {
-        this._users = users;
+    constructor(users: User[] = []) {
+        this._users = new Map<string, User>(users.map((user: User) => [user.player.uuid, user]));
     }
 
     async importUserData(uuid: string) {
@@ -41,7 +40,7 @@ export class StarRailService {
                 spaceInfo: mapKeysToCamelCase(playerData.space_info) as SpaceInfo,
             });
 
-            this._users.push(new User(
+            this._users.set(uuid, new User(
                 mappedPlayer,
                 characters.map(char => new Character(
                     mapKeysToCamelCase(char) as CharacterDetails,

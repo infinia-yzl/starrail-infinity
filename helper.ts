@@ -19,5 +19,3 @@ export function mapKeysToCamelCase(obj: { [key: string]: any }): { [key: string]
 
     return newObj;
 }
-
-

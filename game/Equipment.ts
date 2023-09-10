@@ -59,5 +59,5 @@ export interface Relic {
 // }
 
 export class Equipment {
-    constructor(lightCone: LightCone, relics: Relic[]) {}
+    constructor(public lightCone: LightCone, public relics: Relic[]) {}
 }
