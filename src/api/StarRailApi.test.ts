@@ -2,7 +2,9 @@ import { expect, test, describe, beforeAll } from "bun:test";
 import { StarRailApi } from "./StarRailApi.ts";
 import { ApiCharacterData } from "./StarRailApi.type.ts";
 
-describe("StarRailApi", () => {
+// Skip by default, so we don't make unnecessary API calls.
+// Tip: un-skip, `console.log` the result and add it to a new mock file for testing.
+describe.skip("StarRailApi", () => {
   const UUID = "801875354";
   let api: StarRailApi;
 

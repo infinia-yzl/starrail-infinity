@@ -15,8 +15,8 @@ export interface CharacterDetails {
   promotion: number; // Ascension
   path: PathResource;
   element: ElementResource;
-  skill: Skill[];
-  skillTree: SkillNode[];
+  skills: Skill[];
+  skillTrees: SkillNode[];
 }
 
 export interface Skill {
@@ -53,8 +53,8 @@ export class Character {
   promotion: number;
   path: PathResource;
   element: ElementResource;
-  skill: Skill[];
-  skillTree: SkillNode[];
+  skills: Skill[];
+  skillTrees: SkillNode[]; // aka traces
 
   equipment: Equipment;
 
@@ -67,8 +67,8 @@ export class Character {
     this.promotion = characterData.promotion;
     this.path = characterData.path;
     this.element = characterData.element;
-    this.skill = characterData.skill;
-    this.skillTree = characterData.skillTree;
+    this.skills = characterData.skills;
+    this.skillTrees = characterData.skillTrees;
 
     this.equipment = equipmentData;
   }

@@ -21,7 +21,7 @@ export class StarRailApi extends Api {
    * Get Star Rail user information.
    *
    * @param {string} [lang='en'] - Language for the user information.
-   * @returns {Promise<any>} - Returns a promise resolving with the JSON data.
+   * @returns {Promise<ApiUserInfo>} - Returns a promise resolving with the JSON data.
    */
   async getUserInfo(lang: string = "en"): Promise<ApiUserInfo> {
     const featureUrl = `/sr_info_parsed/${this.uuid}?lang=${lang}`;

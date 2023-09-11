@@ -8,7 +8,7 @@ interface FetchOptions extends RequestInit {
 }
 
 /**
- * A simple API class for wrapping HTTP requests using node-fetch.
+ * A simple API class for wrapping HTTP requests using Bun's fetch.
  */
 export class Api {
   private readonly baseUrl: string;
