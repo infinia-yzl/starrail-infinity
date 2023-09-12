@@ -11,6 +11,8 @@ import { ApiCharacterData } from "./api/StarRailApi.type.ts";
 
 type ComparisonResult = { success: boolean; message: string };
 
+// Write a custom comparer for nested Objects, since Bun doesn't support `objectContaining`
+// > https://github.com/oven-sh/bun/issues/1825#issuecomment-1681785950
 function deepCompare<T>(obj1: T, obj2: T): ComparisonResult {
   if (obj1 === obj2) return { success: true, message: "All properties match" };
 
@@ -136,6 +138,29 @@ describe("StarRailService", async () => {
   });
 
   describe("Character", () => {
+    // This is to test our custom matcher
+    test("(matcher) should fail if Character data don't match", () => {
+      const user = service.getUser(MOCK_USER_INFO_B.player.uid);
+      if (!user) throw new Error("Critical error, user not found");
+
+      expect(user).toStrictEqual(users[2]);
+
+      const userCharacters: { [p: string]: Character } = Object.fromEntries(
+        Object.entries(user.characters),
+      );
+      const expectedCharacters = Object.fromEntries(
+        Object.entries(EXPECTED_CHARACTERS_V130),
+      ) as { [p: string]: Character }; // cast to the same type
+
+      // Since Bun doesn't support `objectContaining` https://github.com/oven-sh/bun/issues/1825#issuecomment-1681785950
+      const result = deepCompare(userCharacters, expectedCharacters);
+
+      // if (!result.success) {
+      //   console.log(`Test failed: ${result.message}`);
+      // }
+      expect(result.success).toBe(false);
+    });
+
     test("should parse Character data correctly", () => {
       const user = service.getUser(MOCK_USER_INFO.player.uid);
       if (!user) throw new Error("Critical error, user not found");
@@ -182,7 +207,7 @@ describe("StarRailService", async () => {
         icon: "icon/element/Quantum.png",
       });
       expect(seele.additions[7]).toStrictEqual({
-        // type: "QuantumAddedRatio",
+        // type: "QuantumAddedRatio", // FIXME: IDK why this isn't filled ¯\_(ツ)_/¯
         field: "quantum_dmg",
         name: "Quantum DMG Boost",
         icon: "icon/property/IconQuantumAddedRatio.png",
