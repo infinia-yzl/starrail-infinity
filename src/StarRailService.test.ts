@@ -1,4 +1,4 @@
-import { expect, test, describe, beforeEach } from "bun:test";
+import { expect, test, describe, beforeAll } from "bun:test";
 
 import MOCK_USER_INFO from "./_mocks/userinfo_v1_3_0.json";
 import { User } from "./game";
@@ -11,8 +11,7 @@ describe("StarRailService", async () => {
   let service: StarRailService;
   let users: User[];
 
-  // beforeAll doesn't seem to work ¯\_(ツ)_/¯
-  beforeEach(() => {
+  beforeAll(() => {
     users = [
       new User(
         StarRailService.fromApiPlayer(MOCK_USER_INFO.player),
@@ -22,11 +21,7 @@ describe("StarRailService", async () => {
         new StarRailApi(MOCK_USER_INFO.player.uid),
       ),
     ];
-
-    // expect(users).toBeArrayOfSize(1);
-
     service = new StarRailService(users);
-    // expect(service.users).toEqual(users);
   });
 
   describe("Users", () => {
@@ -57,6 +52,39 @@ describe("StarRailService", async () => {
       expect(service.getUser(MOCK_USER_INFO.player.uid)).toStrictEqual(
         users[0],
       );
+    });
+  });
+
+  describe("Player", () => {
+    test("should parse Player data correctly", () => {
+      const user = service.getUser(MOCK_USER_INFO.player.uid);
+      if (!user) throw new Error("Critical error, user not found");
+      const { player } = user;
+
+      expect(player).toStrictEqual({
+        avatar: {
+          id: "202006",
+          name: "Wanted Poster",
+          icon: "icon/avatar/202006.png",
+        },
+        friendCount: 24,
+        level: 67,
+        nickname: "Atlas",
+        signature: "you need arlan, trust me",
+        spaceInfo: {
+          achievementCount: 278,
+          avatarCount: 24,
+          challengeData: {
+            mazeGroupId: 1,
+            mazeGroupIndex: 21,
+            preMazeGroupIndex: 1001,
+          },
+          lightConeCount: 62,
+          passAreaProgress: 7,
+        },
+        uuid: "801875354",
+        worldLevel: 6,
+      });
     });
   });
 

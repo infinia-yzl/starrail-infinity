@@ -65,7 +65,9 @@ export class StarRailService {
       friendCount: playerData.friend_count,
       avatar: playerData.avatar,
       signature: playerData.signature,
-      spaceInfo: camelcaseKeys(playerData.space_info as never) as SpaceInfo,
+      spaceInfo: camelcaseKeys(playerData.space_info as never, {
+        deep: true,
+      }) as SpaceInfo,
     };
   }
 
