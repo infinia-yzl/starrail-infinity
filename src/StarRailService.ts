@@ -75,7 +75,7 @@ export class StarRailService {
     return charactersData.map(
       (char) =>
         new Character(
-          camelcaseKeys(char as never) as CharacterDetails,
+          camelcaseKeys(char as never, { deep: true }) as CharacterDetails,
           new Equipment(
             {
               id: char.id,
