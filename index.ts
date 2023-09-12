@@ -1,3 +1,6 @@
-import figlet from "figlet";
-
-console.log(figlet.textSync("Hello via Bun!"));
+// TODO: Implement me!
+// Bun.serve({
+//   fetch(req) {
+//     return new Response("Bun!");
+//   },
+// });
