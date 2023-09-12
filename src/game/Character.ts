@@ -3,6 +3,7 @@ import {
   Effect,
   PathResource,
   ElementResource,
+  Attribute,
 } from "./Mechanic.type.ts";
 import { Equipment } from "./Equipment.ts";
 
@@ -17,6 +18,9 @@ export interface CharacterDetails {
   element: ElementResource;
   skills: Skill[];
   skillTrees: SkillNode[];
+  attributes: Attribute[];
+  additions: Attribute[];
+  properties: Attribute[];
 }
 
 export interface Skill {
@@ -55,6 +59,9 @@ export class Character {
   element: ElementResource;
   skills: Skill[];
   skillTrees: SkillNode[]; // aka traces
+  attributes: Attribute[];
+  additions: Attribute[];
+  properties: Attribute[];
 
   equipment: Equipment;
 
@@ -69,6 +76,9 @@ export class Character {
     this.element = characterData.element;
     this.skills = characterData.skills;
     this.skillTrees = characterData.skillTrees;
+    this.attributes = characterData.attributes;
+    this.additions = characterData.additions;
+    this.properties = characterData.properties;
 
     this.equipment = equipmentData;
   }

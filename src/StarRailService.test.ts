@@ -1,26 +1,73 @@
 import { expect, test, describe, beforeAll } from "bun:test";
 
 import MOCK_USER_INFO from "./_mocks/userinfo_v1_3_0.json";
-import { User } from "./game";
+import MOCK_USER_INFO_A from "./_mocks/userinfo_v1_3_0_a.json";
+import MOCK_USER_INFO_B from "./_mocks/userinfo_v1_3_0_b.json";
+import MOCK_USER_INFO_C from "./_mocks/userinfo_v1_3_0_c.json";
+import { Character, User } from "./game";
 import { StarRailApi } from "./api";
 import { StarRailService } from "./StarRailService.ts";
 import { ApiCharacterData } from "./api/StarRailApi.type.ts";
 
+type ComparisonResult = { success: boolean; message: string };
+
+function deepCompare<T>(obj1: T, obj2: T): ComparisonResult {
+  if (obj1 === obj2) return { success: true, message: "All properties match" };
+
+  if (typeof obj1 !== typeof obj2) {
+    return {
+      success: false,
+      message: `Type mismatch: expected ${typeof obj1}, got ${typeof obj2}`,
+    };
+  }
+
+  if (typeof obj1 !== "object" || obj1 === null || obj2 === null) {
+    return {
+      success: false,
+      message: `Value mismatch: expected ${obj1}, got ${obj2}`,
+    };
+  }
+
+  for (const key in obj1) {
+    if (Object.prototype.hasOwnProperty.call(obj1, key)) {
+      if (!Object.prototype.hasOwnProperty.call(obj2, key)) {
+        return { success: false, message: `Missing property: ${key}` };
+      }
+      const result = deepCompare((obj1 as never)[key], (obj2 as never)[key]);
+      if (!result.success) {
+        return {
+          success: false,
+          message: `Property "${key}" does not match: ${result.message}`,
+        };
+      }
+    }
+  }
+
+  return { success: true, message: "All properties match" };
+}
+
 // Since we have no tests under `./game`, we'll do E2E testing here
 describe("StarRailService", async () => {
+  const MOCK_USERS = [
+    MOCK_USER_INFO,
+    MOCK_USER_INFO_A,
+    MOCK_USER_INFO_B,
+    MOCK_USER_INFO_C,
+  ];
   let service: StarRailService;
   let users: User[];
 
   beforeAll(() => {
-    users = [
-      new User(
-        StarRailService.fromApiPlayer(MOCK_USER_INFO.player),
-        StarRailService.fromApiCharacters(
-          MOCK_USER_INFO.characters as ApiCharacterData[],
+    users = MOCK_USERS.map(
+      (user) =>
+        new User(
+          StarRailService.fromApiPlayer(user.player),
+          StarRailService.fromApiCharacters(
+            user.characters as ApiCharacterData[],
+          ),
+          new StarRailApi(user.player.uid),
         ),
-        new StarRailApi(MOCK_USER_INFO.player.uid),
-      ),
-    ];
+    );
     service = new StarRailService(users);
   });
 
@@ -40,7 +87,7 @@ describe("StarRailService", async () => {
     });
 
     test("should initialize correctly", () => {
-      expect(users).toBeArrayOfSize(1);
+      expect(users).toBeArrayOfSize(MOCK_USERS.length);
       expect(service.users).toEqual(users);
     });
 
@@ -94,13 +141,61 @@ describe("StarRailService", async () => {
       if (!user) throw new Error("Critical error, user not found");
 
       expect(user).toStrictEqual(users[0]);
-      expect(user.characters).toEqual(EXPECTED_CHARACTERS);
+
+      const userCharacters: { [p: string]: Character } = Object.fromEntries(
+        Object.entries(user.characters),
+      );
+      const expectedCharacters = Object.fromEntries(
+        Object.entries(EXPECTED_CHARACTERS_V130),
+      ) as { [p: string]: Character }; // cast to the same type
+
+      // Since Bun doesn't support `objectContaining` https://github.com/oven-sh/bun/issues/1825#issuecomment-1681785950
+      const result = deepCompare(userCharacters, expectedCharacters);
+
+      // if (!result.success) {
+      //   console.log(`Test failed: ${result.message}`);
+      // }
+      expect(result.success).toBe(true);
+    });
+
+    test("should parse specific Character details correctly", () => {
+      // picked at random
+      const user = service.getUser(MOCK_USER_INFO_B.player.uid);
+      if (!user) throw new Error("Critical error, user not found");
+
+      const { characters } = user;
+      expect(characters.length).toStrictEqual(3);
+
+      const asta = characters[0];
+      expect(asta.id).toStrictEqual("1009");
+      expect(asta.path).toStrictEqual({
+        id: "Shaman",
+        name: "Harmony",
+        icon: "icon/path/Harmony.png",
+      });
+
+      const seele = characters[2];
+      expect(seele.element).toStrictEqual({
+        id: "Quantum",
+        name: "Quantum",
+        color: "#1C29BA",
+        icon: "icon/element/Quantum.png",
+      });
+      expect(seele.additions[7]).toStrictEqual({
+        // type: "QuantumAddedRatio",
+        field: "quantum_dmg",
+        name: "Quantum DMG Boost",
+        icon: "icon/property/IconQuantumAddedRatio.png",
+        value: 0.48880301429889395,
+        display: "48.8%",
+        percent: true,
+      });
     });
   });
 });
 
 // Super long & specific expected data, fold the code block please ^_^
-const EXPECTED_CHARACTERS = [
+const EXPECTED_CHARACTERS_V130 = [
   {
     id: "1008",
     name: "Arlan",
@@ -967,6 +1062,271 @@ const EXPECTED_CHARACTERS = [
         },
       ],
     },
+    attributes: [
+      {
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 2257.92,
+        display: "2257",
+        percent: false,
+      },
+      {
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 1076.04,
+        display: "1076",
+        percent: false,
+      },
+      {
+        field: "def",
+        name: "DEF",
+        icon: "icon/property/IconDefence.png",
+        value: 595.35,
+        display: "595",
+        percent: false,
+      },
+      {
+        field: "spd",
+        name: "SPD",
+        icon: "icon/property/IconSpeed.png",
+        value: 102.0,
+        display: "102",
+        percent: false,
+      },
+      {
+        field: "crit_rate",
+        name: "CRIT Rate",
+        icon: "icon/property/IconCriticalChance.png",
+        value: 0.05,
+        display: "5.0%",
+        percent: true,
+      },
+      {
+        field: "crit_dmg",
+        name: "CRIT DMG",
+        icon: "icon/property/IconCriticalDamage.png",
+        value: 0.5,
+        display: "50.0%",
+        percent: true,
+      },
+    ],
+    additions: [
+      {
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 1283.970546525283,
+        display: "1283",
+        percent: false,
+      },
+      {
+        field: "effect_res",
+        name: "Effect RES",
+        icon: "icon/property/IconStatusResistance.png",
+        value: 0.41328000353649597,
+        display: "41.3%",
+        percent: true,
+      },
+      {
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 1902.829632092592,
+        display: "1902",
+        percent: false,
+      },
+      {
+        field: "all_dmg",
+        name: "DMG Boost",
+        icon: "icon/property/IconAttack.png",
+        value: 0.35,
+        display: "35.0%",
+        percent: true,
+      },
+      {
+        field: "spd",
+        name: "SPD",
+        icon: "icon/property/IconSpeed.png",
+        value: 29.93200000631623,
+        display: "29",
+        percent: false,
+      },
+      {
+        field: "crit_rate",
+        name: "CRIT Rate",
+        icon: "icon/property/IconCriticalChance.png",
+        value: 0.647000004230065,
+        display: "64.7%",
+        percent: true,
+      },
+      {
+        field: "crit_dmg",
+        name: "CRIT DMG",
+        icon: "icon/property/IconCriticalDamage.png",
+        value: 0.39528000773861893,
+        display: "39.5%",
+        percent: true,
+      },
+      {
+        field: "def",
+        name: "DEF",
+        icon: "icon/property/IconDefence.png",
+        value: 109.0688157026997,
+        display: "109",
+        percent: false,
+      },
+      {
+        field: "break_dmg",
+        name: "Break Effect",
+        icon: "icon/property/IconBreakUp.png",
+        value: 0.051840000785887,
+        display: "5.1%",
+        percent: true,
+      },
+      {
+        field: "lightning_dmg",
+        name: "Lightning DMG Boost",
+        icon: "icon/property/IconThunderAddedRatio.png",
+        value: 0.48880301429889395,
+        display: "48.8%",
+        percent: true,
+      },
+    ],
+    properties: [
+      {
+        type: "AttackAddedRatio",
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 0.755200007902463,
+        display: "75.5%",
+        percent: true,
+      },
+      {
+        type: "StatusResistanceBase",
+        field: "effect_res",
+        name: "Effect RES",
+        icon: "icon/property/IconStatusResistance.png",
+        value: 0.41328000353649597,
+        display: "41.3%",
+        percent: true,
+      },
+      {
+        type: "HPAddedRatio",
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 0.37648000419140304,
+        display: "37.6%",
+        percent: true,
+      },
+      {
+        type: "AllDamageTypeAddedRatio",
+        field: "all_dmg",
+        name: "DMG Boost",
+        icon: "icon/property/IconAttack.png",
+        value: 0.35,
+        display: "35.0%",
+        percent: true,
+      },
+      {
+        type: "HPDelta",
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 1052.7679010287393,
+        display: "1052",
+        percent: false,
+      },
+      {
+        type: "AttackDelta",
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 471.3451300219167,
+        display: "471",
+        percent: false,
+        count: 2,
+        step: 2,
+      },
+      {
+        type: "SpeedDelta",
+        field: "spd",
+        name: "SPD",
+        icon: "icon/property/IconSpeed.png",
+        value: 29.93200000631623,
+        display: "29",
+        percent: false,
+        count: 2,
+        step: 3,
+      },
+      {
+        type: "CriticalChanceBase",
+        field: "crit_rate",
+        name: "CRIT Rate",
+        icon: "icon/property/IconCriticalChance.png",
+        value: 0.647000004230065,
+        display: "64.7%",
+        percent: true,
+        count: 4,
+        step: 7,
+      },
+      {
+        type: "CriticalDamageBase",
+        field: "crit_dmg",
+        name: "CRIT DMG",
+        icon: "icon/property/IconCriticalDamage.png",
+        value: 0.39528000773861893,
+        display: "39.5%",
+        percent: true,
+        count: 1,
+        step: 0,
+      },
+      {
+        type: "DefenceDelta",
+        field: "def",
+        name: "DEF",
+        icon: "icon/property/IconDefence.png",
+        value: 19.05189600144513,
+        display: "19",
+        percent: false,
+        count: 1,
+        step: 1,
+      },
+      {
+        type: "BreakDamageAddedRatioBase",
+        field: "break_dmg",
+        name: "Break Effect",
+        icon: "icon/property/IconBreakUp.png",
+        value: 0.051840000785887,
+        display: "5.1%",
+        percent: true,
+        count: 1,
+        step: 0,
+      },
+      {
+        type: "DefenceAddedRatio",
+        field: "def",
+        name: "DEF",
+        icon: "icon/property/IconDefence.png",
+        value: 0.151199999498202,
+        display: "15.1%",
+        percent: true,
+        count: 2,
+        step: 4,
+      },
+      {
+        type: "ThunderAddedRatio",
+        field: "lightning_dmg",
+        name: "Lightning DMG Boost",
+        icon: "icon/property/IconThunderAddedRatio.png",
+        value: 0.48880301429889395,
+        display: "48.8%",
+        percent: true,
+      },
+    ],
   },
   {
     id: "1209",
@@ -1823,6 +2183,252 @@ const EXPECTED_CHARACTERS = [
         },
       ],
     },
+    attributes: [
+      {
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 1950.9840000000002,
+        display: "1950",
+        percent: false,
+      },
+      {
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 1261.26,
+        display: "1261",
+        percent: false,
+      },
+      {
+        field: "def",
+        name: "DEF",
+        icon: "icon/property/IconDefence.png",
+        value: 875.385,
+        display: "875",
+        percent: false,
+      },
+      {
+        field: "spd",
+        name: "SPD",
+        icon: "icon/property/IconSpeed.png",
+        value: 109.0,
+        display: "109",
+        percent: false,
+      },
+      {
+        field: "crit_rate",
+        name: "CRIT Rate",
+        icon: "icon/property/IconCriticalChance.png",
+        value: 0.05,
+        display: "5.0%",
+        percent: true,
+      },
+      {
+        field: "crit_dmg",
+        name: "CRIT DMG",
+        icon: "icon/property/IconCriticalDamage.png",
+        value: 0.5,
+        display: "50.0%",
+        percent: true,
+      },
+    ],
+    additions: [
+      {
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 2137.547540940023,
+        display: "2137",
+        percent: false,
+      },
+      {
+        field: "ice_dmg",
+        name: "Ice DMG Boost",
+        icon: "icon/property/IconIceAddedRatio.png",
+        value: 0.632803014298894,
+        display: "63.2%",
+        percent: true,
+      },
+      {
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 1061.5810860197355,
+        display: "1061",
+        percent: false,
+      },
+      {
+        field: "crit_dmg",
+        name: "CRIT DMG",
+        icon: "icon/property/IconCriticalDamage.png",
+        value: 1.45144001398236,
+        display: "145.1%",
+        percent: true,
+      },
+      {
+        field: "def",
+        name: "DEF",
+        icon: "icon/property/IconDefence.png",
+        value: 327.2360952880913,
+        display: "327",
+        percent: false,
+      },
+      {
+        field: "effect_hit",
+        name: "Effect Hit Rate",
+        icon: "icon/property/IconStatusProbability.png",
+        value: 0.28512000432238505,
+        display: "28.5%",
+        percent: true,
+      },
+      {
+        field: "effect_res",
+        name: "Effect RES",
+        icon: "icon/property/IconStatusResistance.png",
+        value: 0.211680003209041,
+        display: "21.1%",
+        percent: true,
+      },
+      {
+        field: "break_dmg",
+        name: "Break Effect",
+        icon: "icon/property/IconBreakUp.png",
+        value: 0.051840000785887,
+        display: "5.1%",
+        percent: true,
+      },
+      {
+        field: "spd",
+        name: "SPD",
+        icon: "icon/property/IconSpeed.png",
+        value: 4.6000000005587935,
+        display: "4",
+        percent: false,
+      },
+    ],
+    properties: [
+      {
+        type: "AttackAddedRatio",
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 1.2606400162633602,
+        display: "126.0%",
+        percent: true,
+      },
+      {
+        type: "IceAddedRatio",
+        field: "ice_dmg",
+        name: "Ice DMG Boost",
+        icon: "icon/property/IconIceAddedRatio.png",
+        value: 0.632803014298894,
+        display: "63.2%",
+        percent: true,
+      },
+      {
+        type: "HPAddedRatio",
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 0.1,
+        display: "10.0%",
+        percent: true,
+      },
+      {
+        type: "CriticalDamageBase",
+        field: "crit_dmg",
+        name: "CRIT DMG",
+        icon: "icon/property/IconCriticalDamage.png",
+        value: 1.45144001398236,
+        display: "145.1%",
+        percent: true,
+      },
+      {
+        type: "HPDelta",
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 866.4826860197354,
+        display: "866",
+        percent: false,
+      },
+      {
+        type: "DefenceAddedRatio",
+        field: "def",
+        name: "DEF",
+        icon: "icon/property/IconDefence.png",
+        value: 0.29159999918192403,
+        display: "29.1%",
+        percent: true,
+        count: 3,
+        step: 3,
+      },
+      {
+        type: "StatusProbabilityBase",
+        field: "effect_hit",
+        name: "Effect Hit Rate",
+        icon: "icon/property/IconStatusProbability.png",
+        value: 0.28512000432238505,
+        display: "28.5%",
+        percent: true,
+        count: 1,
+        step: 2,
+      },
+      {
+        type: "StatusResistanceBase",
+        field: "effect_res",
+        name: "Effect RES",
+        icon: "icon/property/IconStatusResistance.png",
+        value: 0.211680003209041,
+        display: "21.1%",
+        percent: true,
+        count: 2,
+        step: 0,
+      },
+      {
+        type: "AttackDelta",
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 547.5527140276972,
+        display: "547",
+        percent: false,
+      },
+      {
+        type: "DefenceDelta",
+        field: "def",
+        name: "DEF",
+        icon: "icon/property/IconDefence.png",
+        value: 71.97383000422269,
+        display: "71",
+        percent: false,
+        count: 3,
+        step: 2,
+      },
+      {
+        type: "BreakDamageAddedRatioBase",
+        field: "break_dmg",
+        name: "Break Effect",
+        icon: "icon/property/IconBreakUp.png",
+        value: 0.051840000785887,
+        display: "5.1%",
+        percent: true,
+        count: 1,
+        step: 0,
+      },
+      {
+        type: "SpeedDelta",
+        field: "spd",
+        name: "SPD",
+        icon: "icon/property/IconSpeed.png",
+        value: 4.6000000005587935,
+        display: "4",
+        percent: false,
+        count: 2,
+        step: 2,
+      },
+    ],
   },
   {
     id: "1205",
@@ -2682,6 +3288,222 @@ const EXPECTED_CHARACTERS = [
         },
       ],
     },
+    attributes: [
+      {
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 2628.36,
+        display: "2628",
+        percent: false,
+      },
+      {
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 1125.4319999999998,
+        display: "1125",
+        percent: false,
+      },
+      {
+        field: "def",
+        name: "DEF",
+        icon: "icon/property/IconDefence.png",
+        value: 815.85,
+        display: "815",
+        percent: false,
+      },
+      {
+        field: "spd",
+        name: "SPD",
+        icon: "icon/property/IconSpeed.png",
+        value: 97.0,
+        display: "97",
+        percent: false,
+      },
+      {
+        field: "crit_rate",
+        name: "CRIT Rate",
+        icon: "icon/property/IconCriticalChance.png",
+        value: 0.05,
+        display: "5.0%",
+        percent: true,
+      },
+      {
+        field: "crit_dmg",
+        name: "CRIT DMG",
+        icon: "icon/property/IconCriticalDamage.png",
+        value: 0.5,
+        display: "50.0%",
+        percent: true,
+      },
+    ],
+    additions: [
+      {
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 3861.631488716869,
+        display: "3861",
+        percent: false,
+      },
+      {
+        field: "crit_rate",
+        name: "CRIT Rate",
+        icon: "icon/property/IconCriticalChance.png",
+        value: 0.577640003869313,
+        display: "57.7%",
+        percent: true,
+      },
+      {
+        field: "effect_res",
+        name: "Effect RES",
+        icon: "icon/property/IconStatusResistance.png",
+        value: 0.36352000399493,
+        display: "36.3%",
+        percent: true,
+      },
+      {
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 650.5365574471334,
+        display: "650",
+        percent: false,
+      },
+      {
+        field: "crit_dmg",
+        name: "CRIT DMG",
+        icon: "icon/property/IconCriticalDamage.png",
+        value: 0.874800011515622,
+        display: "87.4%",
+        percent: true,
+      },
+      {
+        field: "spd",
+        name: "SPD",
+        icon: "icon/property/IconSpeed.png",
+        value: 38.83200000715442,
+        display: "38",
+        percent: false,
+      },
+      {
+        field: "break_dmg",
+        name: "Break Effect",
+        icon: "icon/property/IconBreakUp.png",
+        value: 0.466560009866952,
+        display: "46.6%",
+        percent: true,
+      },
+      {
+        field: "wind_dmg",
+        name: "Wind DMG Boost",
+        icon: "icon/property/IconWindAddedRatio.png",
+        value: 0.38880301429889397,
+        display: "38.8%",
+        percent: true,
+      },
+    ],
+    properties: [
+      {
+        type: "HPAddedRatio",
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 1.1588800094742382,
+        display: "115.8%",
+        percent: true,
+      },
+      {
+        type: "CriticalChanceBase",
+        field: "crit_rate",
+        name: "CRIT Rate",
+        icon: "icon/property/IconCriticalChance.png",
+        value: 0.577640003869313,
+        display: "57.7%",
+        percent: true,
+      },
+      {
+        type: "StatusResistanceBase",
+        field: "effect_res",
+        name: "Effect RES",
+        icon: "icon/property/IconStatusResistance.png",
+        value: 0.36352000399493,
+        display: "36.3%",
+        percent: true,
+      },
+      {
+        type: "HPDelta",
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 815.6776270151604,
+        display: "815",
+        percent: false,
+      },
+      {
+        type: "AttackAddedRatio",
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 0.19872000301257098,
+        display: "19.8%",
+        percent: true,
+        count: 2,
+        step: 4,
+      },
+      {
+        type: "CriticalDamageBase",
+        field: "crit_dmg",
+        name: "CRIT DMG",
+        icon: "icon/property/IconCriticalDamage.png",
+        value: 0.874800011515622,
+        display: "87.4%",
+        percent: true,
+        count: 1,
+        step: 0,
+      },
+      {
+        type: "AttackDelta",
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 426.8907070166897,
+        display: "426",
+        percent: false,
+      },
+      {
+        type: "SpeedDelta",
+        field: "spd",
+        name: "SPD",
+        icon: "icon/property/IconSpeed.png",
+        value: 38.83200000715442,
+        display: "38",
+        percent: false,
+        count: 3,
+        step: 1,
+      },
+      {
+        type: "BreakDamageAddedRatioBase",
+        field: "break_dmg",
+        name: "Break Effect",
+        icon: "icon/property/IconBreakUp.png",
+        value: 0.466560009866952,
+        display: "46.6%",
+        percent: true,
+        count: 4,
+        step: 3,
+      },
+      {
+        type: "WindAddedRatio",
+        field: "wind_dmg",
+        name: "Wind DMG Boost",
+        icon: "icon/property/IconWindAddedRatio.png",
+        value: 0.38880301429889397,
+        display: "38.8%",
+        percent: true,
+      },
+    ],
   },
   {
     id: "1213",
@@ -3604,5 +4426,261 @@ const EXPECTED_CHARACTERS = [
         },
       ],
     },
+    attributes: [
+      {
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 2300.2560000000003,
+        display: "2300",
+        percent: false,
+      },
+      {
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 1227.7440000000001,
+        display: "1227",
+        percent: false,
+      },
+      {
+        field: "def",
+        name: "DEF",
+        icon: "icon/property/IconDefence.png",
+        value: 760.725,
+        display: "760",
+        percent: false,
+      },
+      {
+        field: "spd",
+        name: "SPD",
+        icon: "icon/property/IconSpeed.png",
+        value: 102.0,
+        display: "102",
+        percent: false,
+      },
+      {
+        field: "crit_rate",
+        name: "CRIT Rate",
+        icon: "icon/property/IconCriticalChance.png",
+        value: 0.05,
+        display: "5.0%",
+        percent: true,
+      },
+      {
+        field: "crit_dmg",
+        name: "CRIT DMG",
+        icon: "icon/property/IconCriticalDamage.png",
+        value: 0.5,
+        display: "50.0%",
+        percent: true,
+      },
+    ],
+    additions: [
+      {
+        field: "imaginary_dmg",
+        name: "Imaginary DMG Boost",
+        icon: "icon/property/IconImaginaryAddedRatio.png",
+        value: 0.7128030142988939,
+        display: "71.2%",
+        percent: true,
+      },
+      {
+        field: "crit_rate",
+        name: "CRIT Rate",
+        icon: "icon/property/IconCriticalChance.png",
+        value: 0.637400000868361,
+        display: "63.7%",
+        percent: true,
+      },
+      {
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 1666.6319844123,
+        display: "1666",
+        percent: false,
+      },
+      {
+        field: "crit_dmg",
+        name: "CRIT DMG",
+        icon: "icon/property/IconCriticalDamage.png",
+        value: 0.34344000695273197,
+        display: "34.3%",
+        percent: true,
+      },
+      {
+        field: "effect_res",
+        name: "Effect RES",
+        icon: "icon/property/IconStatusResistance.png",
+        value: 0.276480004191403,
+        display: "27.6%",
+        percent: true,
+      },
+      {
+        field: "break_dmg",
+        name: "Break Effect",
+        icon: "icon/property/IconBreakUp.png",
+        value: 0.401760008186101,
+        display: "40.1%",
+        percent: true,
+      },
+      {
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 1540.7000824170348,
+        display: "1540",
+        percent: false,
+      },
+      {
+        field: "def",
+        name: "DEF",
+        icon: "icon/property/IconDefence.png",
+        value: 82.15829965142667,
+        display: "82",
+        percent: false,
+      },
+      {
+        field: "spd",
+        name: "SPD",
+        icon: "icon/property/IconSpeed.png",
+        value: 12.400000002235176,
+        display: "12",
+        percent: false,
+      },
+      {
+        field: "effect_hit",
+        name: "Effect Hit Rate",
+        icon: "icon/property/IconStatusProbability.png",
+        value: 0.034560000523925,
+        display: "3.4%",
+        percent: true,
+      },
+    ],
+    properties: [
+      {
+        type: "ImaginaryAddedRatio",
+        field: "imaginary_dmg",
+        name: "Imaginary DMG Boost",
+        icon: "icon/property/IconImaginaryAddedRatio.png",
+        value: 0.7128030142988939,
+        display: "71.2%",
+        percent: true,
+      },
+      {
+        type: "CriticalChanceBase",
+        field: "crit_rate",
+        name: "CRIT Rate",
+        icon: "icon/property/IconCriticalChance.png",
+        value: 0.637400000868361,
+        display: "63.7%",
+        percent: true,
+      },
+      {
+        type: "HPAddedRatio",
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 0.307360003143553,
+        display: "30.7%",
+        percent: true,
+      },
+      {
+        type: "HPDelta",
+        field: "hp",
+        name: "HP",
+        icon: "icon/property/IconMaxHP.png",
+        value: 959.6252930213232,
+        display: "959",
+        percent: false,
+      },
+      {
+        type: "CriticalDamageBase",
+        field: "crit_dmg",
+        name: "CRIT DMG",
+        icon: "icon/property/IconCriticalDamage.png",
+        value: 0.34344000695273197,
+        display: "34.3%",
+        percent: true,
+        count: 2,
+        step: 2,
+      },
+      {
+        type: "StatusResistanceBase",
+        field: "effect_res",
+        name: "Effect RES",
+        icon: "icon/property/IconStatusResistance.png",
+        value: 0.276480004191403,
+        display: "27.6%",
+        percent: true,
+        count: 2,
+        step: 2,
+      },
+      {
+        type: "BreakDamageAddedRatioBase",
+        field: "break_dmg",
+        name: "Break Effect",
+        icon: "icon/property/IconBreakUp.png",
+        value: 0.401760008186101,
+        display: "40.1%",
+        percent: true,
+        count: 4,
+        step: 3,
+      },
+      {
+        type: "AttackDelta",
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 426.8907070166897,
+        display: "426",
+        percent: false,
+      },
+      {
+        type: "DefenceAddedRatio",
+        field: "def",
+        name: "DEF",
+        icon: "icon/property/IconDefence.png",
+        value: 0.107999999541788,
+        display: "10.7%",
+        percent: true,
+        count: 1,
+        step: 2,
+      },
+      {
+        type: "AttackAddedRatio",
+        field: "atk",
+        name: "ATK",
+        icon: "icon/property/IconAttack.png",
+        value: 0.907200015150019,
+        display: "90.7%",
+        percent: true,
+        count: 1,
+        step: 2,
+      },
+      {
+        type: "SpeedDelta",
+        field: "spd",
+        name: "SPD",
+        icon: "icon/property/IconSpeed.png",
+        value: 12.400000002235176,
+        display: "12",
+        percent: false,
+        count: 2,
+        step: 4,
+      },
+      {
+        type: "StatusProbabilityBase",
+        field: "effect_hit",
+        name: "Effect Hit Rate",
+        icon: "icon/property/IconStatusProbability.png",
+        value: 0.034560000523925,
+        display: "3.4%",
+        percent: true,
+        count: 1,
+        step: 0,
+      },
+    ],
   },
 ];

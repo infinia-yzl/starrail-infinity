@@ -5,7 +5,7 @@ import { ApiCharacterData } from "./StarRailApi.type.ts";
 // Skip by default, so we don't make unnecessary API calls.
 // Tip: un-skip, `console.log` the result and add it to a new mock file for testing.
 describe.skip("StarRailApi", () => {
-  const UUID = "801875354";
+  const UUID = "701233111";
   let api: StarRailApi;
 
   beforeAll(() => {
@@ -16,6 +16,10 @@ describe.skip("StarRailApi", () => {
   test("should fetch user details based on UUID", async () => {
     const result = await api.getUserInfo();
     // console.log(result);
+    // const output = Bun.file("./mocks/userinfo_v_1_3_0_a.json", {
+    //   type: "application/json",
+    // }); // create file (doesn't seem to work)
+    // await Bun.write(output, JSON.stringify(result));
 
     expect(result).toStrictEqual({
       player: expect.any(Object),

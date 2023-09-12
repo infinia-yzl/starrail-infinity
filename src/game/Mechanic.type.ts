@@ -4,11 +4,11 @@ import { ApiField, ApiResource } from "../api/StarRailApi.type.ts";
 export enum Path {
   "Warrior" = "The Destruction",
   "Rogue" = "The Hunt",
-  "UNKNOWN1" = "The Erudition",
-  "UNKNOWN2" = "The Harmony",
-  "UNKNOWN3" = "The Nihility",
-  "UNKNOWN4" = "The Preservation",
-  "UNKNOWN5" = "The Abundance",
+  "Mage" = "The Erudition",
+  "Shaman" = "The Harmony",
+  "Warlock" = "The Nihility",
+  "Knight" = "The Preservation",
+  "Priest" = "The Abundance",
 }
 
 export enum Element {
