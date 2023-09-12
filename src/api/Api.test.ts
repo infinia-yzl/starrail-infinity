@@ -1,7 +1,7 @@
 // import {test, expect, mock, describe, afterEach, beforeAll, beforeEach} from 'bun:test';
 // import { Api } from './Api';
 //
-// // FIXME: Mocks don't seem to be working correctly?
+// // FIXME: Mocks don't seem to be working correctly? See comments in https://github.com/oven-sh/bun/issues/1825
 // describe("Api Class tests", () => {
 //     let mockedFetch: any;
 //

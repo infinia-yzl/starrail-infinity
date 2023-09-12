@@ -116,9 +116,6 @@ export class Api {
       };
     }
 
-    console.log(url);
-    console.log(config);
-
     let response: Response;
 
     try {
