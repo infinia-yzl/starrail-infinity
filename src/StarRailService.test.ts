@@ -11,7 +11,7 @@ import { ApiCharacterData } from "./api/StarRailApi.type.ts";
 
 type ComparisonResult = { success: boolean; message: string };
 
-// Write a custom comparer for nested Objects, since Bun doesn't support `objectContaining`
+// Write a custom comparer for nested Objects, since Bun currently doesn't support `objectContaining`
 // > https://github.com/oven-sh/bun/issues/1825#issuecomment-1681785950
 function deepCompare<T>(obj1: T, obj2: T): ComparisonResult {
   if (obj1 === obj2) return { success: true, message: "All properties match" };
