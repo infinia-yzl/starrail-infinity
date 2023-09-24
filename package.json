@@ -2,11 +2,13 @@
   "name": "starrail-infinity",
   "version": "0.1.0",
   "description": "API proxy to fetch and interact with data from Honkai: Star Rail",
-  "module": "src/index.ts",
+  "module": "index.ts",
+  "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "start": "bun run index.ts",
-    "dev": "bun run --watch index.ts",
+    "start": "bun run ./src/index.ts",
+    "dev": "bun run --watch ./src/index.ts",
+    "build": "bun run build.ts",
     "lint": "bun x eslint . --fix"
   },
   "keywords": ["Honkai: Star Rail", "hsr", "starrail", "hoyoverse", "API", "Proxy", "Typescript", "Bun", "Elysia"],
@@ -36,5 +38,9 @@
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
-  }
+  },
+  "files": [
+    "dist/**/*",
+    "*.d.ts"
+  ]
 }
