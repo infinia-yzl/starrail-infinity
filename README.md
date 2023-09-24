@@ -1,6 +1,6 @@
 # 🌠 StarRail Infinity 🌠
 
-🌠 **StarRail Infinity** is a fan-made **API proxy** to **fetch** and interact with data from [Honkai: Star Rail](https://hsr.hoyoverse.com/). 
+🌠 **StarRail Infinity** is a fan-made, fully-typed **API proxy** to **fetch** and interact with data from [Honkai: Star Rail](https://hsr.hoyoverse.com/). 
 
 Built with a vision to improve and simplify data access, this project reflects my passion for the game and the broader community.
 It is currently a work-in-progress with no hard timelines -- it's a passion project.
@@ -60,7 +60,23 @@ classDiagram
 1. **Indexing**: The plan isn't just to fetch, but to remember. I'm aiming to index player data for even swifter retrievals down the line.
 2. **Insights**: I'm excited about the potential to delve into the nuances of player data. Imagine drawing meaningful patterns, understanding trends, and even perhaps making game strategy suggestions. The data holds stories, and I intend to narrate them.
 
-## 💻 Getting Started:
+## 💻 Installation:
+To use **StarRail Infinity** in your project, you can install it via `npm`:
+```bash
+npm install starrail-infinity
+```
+
+Or via Bun:
+```bash
+bun add starrail-infinity
+```
+
+Or via Yarn:
+```bash
+yarn add starrail-infinity
+```
+
+## 🏗️ Development:
 
 This project is built with: 
 - [Bun](https://bun.sh/) - Bun is a fast Javascript all-in-one toolkit. *It's similar to node.*
