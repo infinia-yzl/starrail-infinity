@@ -5,16 +5,22 @@ import { StarRailService } from "../services/StarRailService.ts";
 import { SWAGGER_CONFIG } from "./swaggerConfig.ts";
 
 /**
- * Configurable backend Elysia server class. \
- * If you're a front-end consumer, you probably don't need this -- use {@link StarRailElysiaApp} instead.
+ * Represents a configurable Elysia server specifically designed for StarRail.
+ *
+ * @remarks
+ * This server class can be used to configure a backend Elysia server.
+ * For front-end consumers, the {@link StarRailElysiaApp} type should be used instead.
  */
 export class StarRailElysiaServer {
   private service: StarRailService;
 
   /**
+   * Creates an instance of the StarRailElysiaServer.
+   *
+   * @remarks
    * To add specific settings such as CORS, instantiate and configure an Elysia instance, then pass that in.
    * https://elysiajs.com/plugins/overview.html
-   * @param app
+   * @param app - An optional, pre-configured Elysia instance.
    */
   constructor(private readonly app = new Elysia()) {
     this.app.use(swagger(SWAGGER_CONFIG));
@@ -23,16 +29,29 @@ export class StarRailElysiaServer {
     this.initializeRoutes();
   }
 
-  // Returns `app` for Eden Treaty and Testing
+  /**
+   * Retrieves the underlying Elysia instance. Useful for plugins like Eden Treaty and testing.
+   * @returns The Elysia app instance.
+   */
   public elysia(): Elysia {
     return this.app;
   }
 
+  /**
+   * Starts the Elysia server.
+   *
+   * @param port - The port on which the server should listen. Defaults to 3001.
+   */
   start(port: number = 3001) {
     this.app.listen(port);
     console.log(`🌠🦊 StarRailElysiaServer is running on port ${port}`);
   }
 
+  /**
+   * Stops the Elysia server.
+   *
+   * @param requester - Optional name or identifier of the requester prompting the server to stop.
+   */
   stop(requester?: string) {
     this.app
       .stop()
@@ -45,6 +64,9 @@ export class StarRailElysiaServer {
       );
   }
 
+  /**
+   * Private method to initialize API routes.
+   */
   private initializeRoutes() {
     this.app.get(
       "/health",
@@ -94,11 +116,16 @@ export class StarRailElysiaServer {
   }
 }
 
-/*
-  Highly recommended for front-end consumers. Use [Eden Treaty](https://elysiajs.com/plugins/eden/treaty.html). \
-  For example:
-  ```typescript
-  const appClient = edenTreaty<StarRailElysiaApp>('http://localhost:3001');
-  ```
-*/
+/**
+ * Type definition representing the server interface for front-end consumers.
+ *
+ * @remarks
+ * This type is recommended for front-end consumption, especially when using
+ * plugins like [Eden Treaty](https://elysiajs.com/plugins/eden/treaty.html).
+ *
+ * @example
+ * ```typescript
+ * const appClient = edenTreaty<StarRailElysiaApp>('http://localhost:3001');
+ * ```
+ */
 export type StarRailElysiaApp = ReturnType<StarRailElysiaServer["elysia"]>;

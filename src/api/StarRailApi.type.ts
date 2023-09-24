@@ -1,3 +1,6 @@
+/**
+ * From Hoyo's API.
+ */
 export interface ApiPlayerData {
   uid: string;
   nickname: string;
@@ -10,6 +13,9 @@ export interface ApiPlayerData {
   space_info: ApiSpaceInfo;
 }
 
+/**
+ * From Hoyo's API.
+ */
 export interface ApiCharacterData {
   id: string;
   name: string;
@@ -33,6 +39,9 @@ export interface ApiCharacterData {
   properties: ApiAttribute[];
 }
 
+/**
+ * From Hoyo's API.
+ */
 export interface ApiAttribute {
   field: ApiField;
   name: string;
@@ -45,6 +54,9 @@ export interface ApiAttribute {
   step?: number;
 }
 
+/**
+ * From Hoyo's API.
+ */
 export enum ApiField {
   AllDmg = "all_dmg",
   Atk = "atk",
@@ -65,6 +77,9 @@ export enum ApiField {
   WindDmg = "wind_dmg",
 }
 
+/**
+ * From Hoyo's API.
+ */
 export interface ApiResource {
   id: string;
   name: string;
@@ -72,6 +87,9 @@ export interface ApiResource {
   icon: string;
 }
 
+/**
+ * From Hoyo's API.
+ */
 export interface ApiLightCone {
   id: string;
   name: string;
@@ -87,6 +105,9 @@ export interface ApiLightCone {
   properties: ApiAttribute[];
 }
 
+/**
+ * From Hoyo's API.
+ */
 export interface ApiRelicSet {
   id: string;
   name: string;
@@ -96,6 +117,9 @@ export interface ApiRelicSet {
   properties: ApiAttribute[];
 }
 
+/**
+ * From Hoyo's API.
+ */
 export interface ApiRelic {
   id: string;
   name: string;
@@ -108,6 +132,9 @@ export interface ApiRelic {
   sub_affix: ApiAttribute[];
 }
 
+/**
+ * From Hoyo's API.
+ */
 export interface ApiSkillTree {
   id: string;
   level: number;
@@ -117,6 +144,9 @@ export interface ApiSkillTree {
   parent: null | string;
 }
 
+/**
+ * From Hoyo's API.
+ */
 export interface ApiSkill {
   id: string;
   name: string;
@@ -132,6 +162,9 @@ export interface ApiSkill {
   icon: string;
 }
 
+/**
+ * From Hoyo's API.
+ */
 export enum ApiEffect {
   AoEAttack = "AoEAttack",
   Blast = "Blast",
@@ -140,6 +173,9 @@ export enum ApiEffect {
   SingleAttack = "SingleAttack",
 }
 
+/**
+ * From Hoyo's API.
+ */
 export interface ApiSpaceInfo {
   challenge_data: ApiChallengeData;
   pass_area_progress: number;
@@ -148,12 +184,18 @@ export interface ApiSpaceInfo {
   achievement_count: number;
 }
 
+/**
+ * From Hoyo's API.
+ */
 export interface ApiChallengeData {
   maze_group_id: number;
   maze_group_index: number;
   pre_maze_group_index: number;
 }
 
+/**
+ * From Hoyo's API.
+ */
 export interface ApiUserInfo {
   player: ApiPlayerData;
   characters: ApiCharacterData[];
