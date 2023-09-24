@@ -20,7 +20,11 @@
     ]
   },
   "include": [
-    "./src/**/*.ts",
+    "src/**/*.ts",
     "src/_mocks/*.json"
   ],
+  "exclude": [
+    "node_modules",
+    "dist",
+  ]
 }

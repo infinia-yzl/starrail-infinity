@@ -1,5 +1,5 @@
 // This file contains types for base game mechanics that aren't currently abstracted to their own classes.
-import { ApiField, ApiResource } from "../api/StarRailApi.type.ts";
+import { ApiField, ApiResource } from "../api";
 
 export enum Path {
   "Warrior" = "The Destruction",
