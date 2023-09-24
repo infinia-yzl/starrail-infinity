@@ -8,7 +8,7 @@ It is currently a work-in-progress with no hard timelines -- it's a passion proj
 ## ✨ Features:
 
 ### Current:
-- **Proxy Access**: Directly fetch game data. A straightforward gateway to the game's publicly available details.
+- **Proxy Access**: Directly fetch publicly available game data.
 - **Basic Caching**: Minimize redundant API calls.
 - **Fully Typed**: Built with TypeScript, ensure type-safe interactions and predictable responses.
 - **Comprehensive Testing**: Utilises Bun's built-in testing functionality to ensure reliability.
@@ -23,6 +23,10 @@ This project is built with:
 - [Bun](https://bun.sh/) - Bun is a fast Javascript all-in-one toolkit. *It's similar to node.*
 - [Elysia](https://elysiajs.com/) - ElysiaJS is a fast, and friendly Bun web framework.
 
+**You'll need [Bun](https://bun.sh/) to be able to run `bun` commands. 
+Install [Bun](https://bun.sh/) with [these instructions](https://github.com/oven-sh/bun/#install) first!**
+
+After you have Bun installed:
 1. **Install Dependencies**:
 
     ```bash

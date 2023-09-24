@@ -1,4 +1,25 @@
 {
+  "name": "starrail-infinity",
+  "version": "0.1.0",
+  "description": "API proxy to fetch and interact with data from Honkai: Star Rail",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run index.ts",
+    "dev": "bun run --watch index.ts",
+    "lint": "bun x eslint . --fix"
+  },
+  "keywords": ["Honkai: Star Rail", "hsr", "starrail", "hoyoverse", "API", "Proxy", "Typescript", "Bun", "Elysia"],
+  "author": "Isaac Yong <dev@infinia.space>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/infinia-yzl/starrail-infinity.git"
+  },
+  "bugs": {
+    "url": "https://github.com/infinia-yzl/starrail-infinity/issues"
+  },
+  "homepage": "https://github.com/infinia-yzl/starrail-infinity#readme",
   "dependencies": {
     "@elysiajs/swagger": "^0.7.2",
     "camelcase-keys": "^9.0.0",
@@ -12,14 +33,6 @@
     "eslint-config-prettier": "^9.0.0",
     "prettier": "3.0.3",
     "typescript": "^5.2.2"
-  },
-  "name": "psychic-eureka",
-  "module": "src/index.ts",
-  "type": "module",
-  "scripts": {
-    "start": "bun run index.ts",
-    "dev": "bun run --watch index.ts",
-    "lint": "bun x eslint . --fix"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
