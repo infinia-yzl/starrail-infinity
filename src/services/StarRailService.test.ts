@@ -1,13 +1,13 @@
 import { expect, test, describe, beforeAll } from "bun:test";
 
-import MOCK_USER_INFO from "./_mocks/userinfo_v1_3_0.json";
-import MOCK_USER_INFO_A from "./_mocks/userinfo_v1_3_0_a.json";
-import MOCK_USER_INFO_B from "./_mocks/userinfo_v1_3_0_b.json";
-import MOCK_USER_INFO_C from "./_mocks/userinfo_v1_3_0_c.json";
-import { Character, User } from "./game";
-import { StarRailApi } from "./api";
+import MOCK_USER_INFO from "../_mocks/userinfo_v1_3_0.json";
+import MOCK_USER_INFO_A from "../_mocks/userinfo_v1_3_0_a.json";
+import MOCK_USER_INFO_B from "../_mocks/userinfo_v1_3_0_b.json";
+import MOCK_USER_INFO_C from "../_mocks/userinfo_v1_3_0_c.json";
+import { Character, User } from "../game";
+import { StarRailApi } from "../api";
 import { StarRailService } from "./StarRailService.ts";
-import { ApiCharacterData } from "./api/StarRailApi.type.ts";
+import { ApiCharacterData } from "../api/StarRailApi.type.ts";
 
 type ComparisonResult = { success: boolean; message: string };
 
@@ -97,16 +97,16 @@ describe("StarRailService", async () => {
       expect(service.users).toStrictEqual(users);
     });
 
-    test("should return user based on uuid", () => {
-      expect(service.getUser(MOCK_USER_INFO.player.uid)).toStrictEqual(
+    test("should return user based on uuid", async () => {
+      expect(await service.getUser(MOCK_USER_INFO.player.uid)).toStrictEqual(
         users[0],
       );
     });
   });
 
   describe("Player", () => {
-    test("should parse Player data correctly", () => {
-      const user = service.getUser(MOCK_USER_INFO.player.uid);
+    test("should parse Player data correctly", async () => {
+      const user = await service.getUser(MOCK_USER_INFO.player.uid);
       if (!user) throw new Error("Critical error, user not found");
       const { player } = user;
 
@@ -139,8 +139,8 @@ describe("StarRailService", async () => {
 
   describe("Character", () => {
     // This is to test our custom matcher
-    test("(matcher) should fail if Character data don't match", () => {
-      const user = service.getUser(MOCK_USER_INFO_B.player.uid);
+    test("(matcher) should fail if Character data don't match", async () => {
+      const user = await service.getUser(MOCK_USER_INFO_B.player.uid);
       if (!user) throw new Error("Critical error, user not found");
 
       expect(user).toStrictEqual(users[2]);
@@ -161,8 +161,8 @@ describe("StarRailService", async () => {
       expect(result.success).toBe(false);
     });
 
-    test("should parse Character data correctly", () => {
-      const user = service.getUser(MOCK_USER_INFO.player.uid);
+    test("should parse Character data correctly", async () => {
+      const user = await service.getUser(MOCK_USER_INFO.player.uid);
       if (!user) throw new Error("Critical error, user not found");
 
       expect(user).toStrictEqual(users[0]);
@@ -183,9 +183,9 @@ describe("StarRailService", async () => {
       expect(result.success).toBe(true);
     });
 
-    test("should parse specific Character details correctly", () => {
+    test("should parse specific Character details correctly", async () => {
       // picked at random
-      const user = service.getUser(MOCK_USER_INFO_B.player.uid);
+      const user = await service.getUser(MOCK_USER_INFO_B.player.uid);
       if (!user) throw new Error("Critical error, user not found");
 
       const { characters } = user;
