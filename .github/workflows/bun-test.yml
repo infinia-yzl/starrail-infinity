@@ -10,7 +10,7 @@ on:
 
 jobs:
   test:
-    name: Bun Tests
+    name: Run Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -30,7 +30,7 @@ jobs:
         run: bun test
 
   build:
-    name: Bun Build
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
@@ -47,4 +47,4 @@ jobs:
 
       # Run Bun build
       - name: Build
-        run: bun build
+        run: bun run build
