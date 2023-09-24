@@ -5,6 +5,49 @@
 Built with a vision to improve and simplify data access, this project reflects my passion for the game and the broader community.
 It is currently a work-in-progress with no hard timelines -- it's a passion project.
 
+```mermaid
+classDiagram
+    class StarRailElysiaServer {
+        <<Service>>
+    }
+
+    class StarRailService {
+        <<Service>>
+    }
+
+    class StarRailApi {
+        <<API Interface>>
+    }
+
+    class HoyoApi {
+        <<External API>>
+    }
+
+    class User {
+        <<Data Model>>
+    }
+
+    class Player {
+        <<Data Model>>
+    }
+
+    class Character {
+        <<Data Model>>
+    }
+
+    class Equipment {
+        <<Data Model>>
+    }
+
+    StarRailElysiaServer --> StarRailService : Uses
+    StarRailService --> User : Manages
+    StarRailService --> StarRailApi : Uses
+    User --> Player : Contains
+    User --> Character : Contains
+    Character --> Equipment : Contains
+    StarRailApi --> HoyoApi : Interacts with
+```
+
 ## ✨ Features:
 
 ### Current:

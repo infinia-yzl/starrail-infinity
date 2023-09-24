@@ -1,13 +1,25 @@
 import { Api } from "./Api.ts";
 import { ApiUserInfo } from "./StarRailApi.type.ts";
 
+/**
+ * API class for interacting with the StarRail endpoint.
+ */
 export class StarRailApi extends Api {
+  /** Base URL for the StarRail API. */
   static baseUrl = "https://api.mihomo.me";
 
+  /**
+   * Getter for the user's UUID.
+   * @returns {string} - The UUID of the user.
+   */
   get uuid(): string {
     return this._uuid;
   }
 
+  /**
+   * Constructor for the `StarRailApi` class.
+   * @param {string} _uuid - The UUID of the user.
+   */
   constructor(private readonly _uuid: string) {
     super({
       baseUrl: StarRailApi.baseUrl,
@@ -18,8 +30,7 @@ export class StarRailApi extends Api {
   }
 
   /**
-   * Get Star Rail user information.
-   *
+   * Fetches Star Rail user information.
    * @param {string} [lang='en'] - Language for the user information.
    * @returns {Promise<ApiUserInfo>} - Returns a promise resolving with the JSON data.
    */

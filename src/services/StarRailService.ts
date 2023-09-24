@@ -12,13 +12,16 @@ import {
   User,
 } from "../game";
 import { Attribute, PathResource } from "../game/Mechanic.type.ts";
-import {
-  ApiCharacterData,
-  ApiPlayerData,
-  ApiRelic,
-} from "../api/StarRailApi.type.ts";
+import { ApiCharacterData, ApiPlayerData, ApiRelic } from "../api";
 
+/**
+ * Service class for interacting with the StarRail API and data transformations.
+ */
 export class StarRailService {
+  /**
+   * Constructor for the `StarRailService` class.
+   * @param {User[]} users - An initial set of user data.
+   */
   constructor(users: User[] = []) {
     this._users = new Map<string, User>(
       users.map((user: User) => [user.player.uuid, user]),
@@ -27,10 +30,21 @@ export class StarRailService {
 
   private readonly _users: Map<string, User>;
 
+  /**
+   * Getter for all users.
+   * @returns {User[]} - List of all users.
+   */
   get users(): User[] {
     return Array.from(this._users.values());
   }
 
+  /**
+   * Fetches a user's data, optionally bypassing cache.
+   * @param {string} uuid - The UUID of the user.
+   * @param {boolean} refresh - If true, bypasses cache and fetches fresh data.
+   * @returns {Promise<User>} - The user's data.
+   * @throws Will throw an error if the fetch fails.
+   */
   async getUser(uuid: string, refresh?: boolean): Promise<User> {
     const cachedUser = this._users.get(uuid);
 
@@ -61,6 +75,11 @@ export class StarRailService {
     return user;
   }
 
+  /**
+   * Transforms player data fetched from the API to a PlayerDetails format.
+   * @param {ApiPlayerData} playerData - The raw player data from the API.
+   * @returns {PlayerDetails} - The transformed player details.
+   */
   static fromApiPlayer(playerData: ApiPlayerData): PlayerDetails {
     return {
       uuid: playerData.uid,
@@ -76,6 +95,11 @@ export class StarRailService {
     };
   }
 
+  /**
+   * Transforms character data fetched from the API to a list of Characters.
+   * @param {ApiCharacterData[]} charactersData - The raw character data list from the API.
+   * @returns {Character[]} - List of transformed characters.
+   */
   static fromApiCharacters(charactersData: ApiCharacterData[]): Character[] {
     return charactersData.map(
       (char) =>
@@ -102,6 +126,11 @@ export class StarRailService {
     );
   }
 
+  /**
+   * Transforms relic data fetched from the API to a Relic format.
+   * @param {ApiRelic} apiRelic - The raw relic data from the API.
+   * @returns {Relic} - The transformed relic.
+   */
   static fromApiRelic(apiRelic: ApiRelic): Relic {
     return {
       id: apiRelic.id,
