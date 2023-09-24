@@ -1,6 +1,6 @@
 import camelcaseKeys from "camelcase-keys";
 
-import { StarRailApi } from "./api";
+import { StarRailApi } from "../api";
 import {
   Character,
   CharacterDetails,
@@ -10,50 +10,55 @@ import {
   Equipment,
   Relic,
   User,
-} from "./game";
-import { Attribute, PathResource } from "./game/Mechanic.type.ts";
+} from "../game";
+import { Attribute, PathResource } from "../game/Mechanic.type.ts";
 import {
   ApiCharacterData,
   ApiPlayerData,
   ApiRelic,
-} from "./api/StarRailApi.type.ts";
+} from "../api/StarRailApi.type.ts";
 
 export class StarRailService {
-  private readonly _users: Map<string, User>;
-
-  get users(): User[] {
-    return Array.from(this._users.values());
-  }
-
-  getUser(uuid: string): User | undefined {
-    return this._users.get(uuid);
-  }
-
   constructor(users: User[] = []) {
     this._users = new Map<string, User>(
       users.map((user: User) => [user.player.uuid, user]),
     );
   }
 
-  async importUserData(uuid: string) {
-    const userApi = new StarRailApi(uuid);
+  private readonly _users: Map<string, User>;
 
-    try {
-      const { player: playerData, characters } = await userApi.getUserInfo();
+  get users(): User[] {
+    return Array.from(this._users.values());
+  }
 
-      this._users.set(
-        uuid,
-        new User(
-          new Player(StarRailService.fromApiPlayer(playerData)),
-          StarRailService.fromApiCharacters(characters),
-          userApi,
-        ),
-      );
-    } catch (e) {
-      throw new Error(
-        `Error fetching data from the game's API (player-details): ${e}`,
-      );
+  async getUser(uuid: string, refresh?: boolean): Promise<User> {
+    const cachedUser = this._users.get(uuid);
+
+    // If we have a cached user and no refresh is requested, return the cached user
+    if (cachedUser && !refresh) {
+      return cachedUser;
     }
+
+    // If no cached user or a refresh is requested, fetch and cache the user
+    try {
+      return await this._fetchAndCacheUser(uuid);
+    } catch (e) {
+      throw new Error(`Error fetching or caching user data: ${e}`);
+    }
+  }
+
+  private async _fetchAndCacheUser(uuid: string): Promise<User> {
+    const userApi = new StarRailApi(uuid);
+    const { player: playerData, characters } = await userApi.getUserInfo();
+
+    const user = new User(
+      new Player(StarRailService.fromApiPlayer(playerData)),
+      StarRailService.fromApiCharacters(characters),
+      userApi,
+    );
+    this._users.set(uuid, user);
+
+    return user;
   }
 
   static fromApiPlayer(playerData: ApiPlayerData): PlayerDetails {
